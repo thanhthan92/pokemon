@@ -1,4 +1,7 @@
 :host ::ng-deep {
+    .p-paginator-last, .p-paginator-first{
+        display: none;
+    }
     
     .p-dropdown {
         width: 14rem;

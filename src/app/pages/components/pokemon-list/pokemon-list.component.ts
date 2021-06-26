@@ -47,6 +47,7 @@ export class PokemonListComponent implements OnInit, OnDestroy{
     this.pokemonQuery.select(state => state.ui).pipe(tap(rs => {
       const totalCurrent: number = this.pokemonQuery.getCount() ? this.pokemonQuery.getCount() : 0;
       const total: number = rs && rs['count'] ? rs['count'] : 0;
+      this.totalRecords = total;
       if(rs['next'] && total > 0 &&  total > totalCurrent) {
        this.url = rs['next'] as string;
       }
@@ -71,8 +72,8 @@ export class PokemonListComponent implements OnInit, OnDestroy{
     this.pokemonQuery.selectAll().pipe(
       tap(pokemons => {
         this.virtualPokemons = [...[], ...pokemons];
+        console.log(this.virtualPokemons, this.first);
         this.pokemons = this.virtualPokemons.slice(this.first, (this.first + this.row * 2));
-        this.totalRecords = this.virtualPokemons.length;
       }),
     ).subscribe();
   }
