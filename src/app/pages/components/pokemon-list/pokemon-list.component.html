@@ -1,0 +1,53 @@
+<div class="card" >
+    <p-dataView #dv [value]="pokemons" [loading]="isLoading" [paginator]="true" [rows]="row" filterBy="name"
+         layout="grid" [lazy]="true" (onLazyLoad)="loadData($event)" [totalRecords]="totalRecords" [(first)]="first">
+         <ng-template pTemplate="header">
+            <div class="p-d-flex p-flex-md-row p-jc-start p-flex-column">
+                <span class="p-input-icon-left p-mb-2 p-mb-md-0 p-mr-3">
+                    <i class="pi pi-search"></i>
+                    <input type="search" pInputText placeholder="Search by Name" (input)="filter($event)">
+                </span>
+                <p-dropdown [options]="visibles" dataKey="code" [(ngModel)]="selectedVisible" (onChange)="visableOnchange($event)" optionLabel="name"></p-dropdown>
+            </div>
+        </ng-template>
+        <ng-template let-pokemon pTemplate="gridItem">
+            <div class="p-col-12 p-md-4 p-sm-12 p-lg-3 p-xl-3" (click)="showDialog(pokemon)">
+                <div class="pokemon-grid-item card">
+                    <div class="pokemon-grid-item-content">
+                        <img [src]="pokemon?.sprites?.front_default" [alt]="pokemon?.name"/>
+                        <div class="pokemon-name">{{pokemon?.name}}</div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-dataView>
+</div>
+
+<p-dialog header="{{pokemonSelected?.name}}" [(visible)]="display" [modal]="true" [style]="{width: '50vw'}" [baseZIndex]="10000"
+    [draggable]="false" [resizable]="true">
+    <div class="p-grid">
+        <div class="p-md-3 p-sm-12 p-lg-3 p-xl-3">
+            <div class="pokemon-grid-item card">
+                <div class="pokemon-grid-item-content">
+                    <img [src]="pokemonSelected?.sprites?.front_default" [alt]="pokemonSelected?.name"/>
+                </div>
+            </div>
+        </div>
+        <div class="p-md-9 p-sm-12 p-lg-9 p-xl-9">
+            <div class="p-grid">
+                <div class="p-col-2">Abilities: </div>
+                <div class="p-col-10">
+                    <span *ngFor="let abilitie of pokemonSelected?.abilities; index as i; first as isFirst">
+                        {{abilitie?.ability?.name}}<br>
+                    </span> 
+                </div>
+                <div class="p-col-2">Types: </div>
+                <div class="p-col-10">
+                    <span *ngFor="let type of pokemonSelected?.types; index as i; first as isFirst">
+                        {{type?.type?.name}}<br>
+                    </span> 
+                </div>
+            </div>
+        </div>
+    </div>
+</p-dialog>

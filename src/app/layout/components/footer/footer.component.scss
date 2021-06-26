@@ -1,0 +1,13 @@
+:host {
+    display: flex;
+    flex: 0 0 auto;
+    z-index: 3;
+
+    &.above {
+        position: relative;
+        z-index: 99;
+    }
+    .layout-footer {
+        width: 100%;
+    }
+}

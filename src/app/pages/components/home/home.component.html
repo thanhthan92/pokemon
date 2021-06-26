@@ -1,0 +1,90 @@
+<div class="trailer">
+    <p-galleria [value]="images" [circular]="true"
+    [autoPlay]="true" [transitionInterval]="9999000" [responsiveOptions]="responsiveOptions" [containerStyle]="{'max-width': '100%'}" [numVisible]="2"> 
+        <ng-template pTemplate="item" let-item>
+            <iframe width="100%" height="350" [src]='item.previewVideoSrc' frameborder="0" allowfullscreen></iframe>
+            <!-- <img [src]="item.previewImageSrc" /> -->
+        </ng-template>
+        <ng-template pTemplate="thumbnail" let-item>
+            <div class="p-grid p-nogutter p-justify-center">
+                <img [src]="item.thumbnailImageSrc" />
+            </div>
+        </ng-template>
+    </p-galleria>
+</div>
+<section>
+    <div class="card" *ngIf="pokemons && pokemons.length > 0">
+        <p-dataView #dv [value]="pokemons" [rows]="9" filterBy="name"
+             layout="grid">
+             <ng-template pTemplate="header">
+                <div class="p-d-flex p-flex-md-row p-jc-between p-ai-center">
+                    <p>Pokemons section</p>
+                    <p-button label="See more" (click)="showListPokemon()"></p-button>
+                </div>
+            </ng-template>
+            <ng-template let-pokemon pTemplate="gridItem">
+                <div class="p-col-12 p-md-4 p-sm-12 p-lg-3 p-xl-3" (click)="showDialog(pokemon)">
+                    <div class="pokemon-grid-item card">
+                        <div class="pokemon-grid-item-content">
+                            <img [src]="pokemon?.sprites?.front_default" [alt]="pokemon.name"/>
+                            <div class="pokemon-name">{{pokemon.name}}</div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </p-dataView>
+    </div>
+</section>
+
+<section>
+    <div class="card" *ngIf="items && items.length > 0">
+        <p-dataView #dv [value]="items" [rows]="9" filterBy="name"
+             layout="grid">
+             <ng-template pTemplate="header">
+                <div class="p-d-flex p-flex-md-row p-jc-start">
+                    <p>Items section</p>
+                </div>
+            </ng-template>
+            <ng-template let-item pTemplate="gridItem">
+                <div class="p-col-12 p-md-4 p-sm-12 p-lg-3 p-xl-3">
+                    <div class="pokemon-grid-item card">
+                        <div class="pokemon-grid-item-content">
+                            <img [src]="item?.sprites?.default" [alt]="item.name"/>
+                            <div class="pokemon-name">{{item.name}}</div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </p-dataView>
+    </div>
+</section>
+
+<p-dialog header="{{pokemonSelected?.name}}" [(visible)]="display" [modal]="true" [style]="{width: '50vw'}" [baseZIndex]="10000"
+    [draggable]="false" [resizable]="true">
+    <div class="p-grid">
+        <div class="p-md-3 p-sm-12 p-lg-3 p-xl-3">
+            <div class="pokemon-grid-item card">
+                <div class="pokemon-grid-item-content">
+                    <img [src]="pokemonSelected?.sprites?.front_default" [alt]="pokemonSelected.name"/>
+                </div>
+            </div>
+        </div>
+        <div class="p-md-9 p-sm-12 p-lg-9 p-xl-9">
+            <div class="p-grid">
+                <div class="p-col-2">Abilities: </div>
+                <div class="p-col-10">
+                    <span *ngFor="let abilitie of pokemonSelected?.abilities; index as i; first as isFirst">
+                        {{abilitie?.ability?.name}}<br>
+                    </span> 
+                </div>
+                <div class="p-col-2">Types: </div>
+                <div class="p-col-10">
+                    <span *ngFor="let type of pokemonSelected?.types; index as i; first as isFirst">
+                        {{type?.type?.name}}<br>
+                    </span> 
+                </div>
+            </div>
+        </div>
+    </div>
+</p-dialog>
+
