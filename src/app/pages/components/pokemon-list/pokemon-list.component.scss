@@ -78,7 +78,6 @@
     
         img {
             width: 75%;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
             margin: 2rem 0;
         }
     
@@ -131,3 +130,11 @@
 		}
 	}
 }
+
+@media screen and (min-width: 1024px) {
+    .pokemon-grid-item-container {
+        width: 20% !important;
+    }
+}
+
+

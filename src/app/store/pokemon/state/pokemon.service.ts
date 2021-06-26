@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { ID } from '@datorama/akita';
 import { MessageService } from 'primeng/api';
 import { of } from 'rxjs';
-import { catchError, map, mapTo, tap } from 'rxjs/operators';
+import { catchError, isEmpty, map, mapTo, tap } from 'rxjs/operators';
 import { Pokemon, QueryParams } from './pokemon.model';
 import { PokemonStore } from './pokemon.store';
 import { Apollo, gql } from 'apollo-angular';
 import { environment } from 'src/environments/environment';
 import { PokemonQuery } from './pokemon.query';
+import { CommonService } from '../common.service';
 
 @Injectable({ providedIn: 'root' },
 )
@@ -16,15 +17,25 @@ export class PokemonService {
   url = environment.endpoint + 'pokemon';
   constructor(private pokemonStore: PokemonStore, private http: HttpClient,
     private messageService: MessageService,
-    private pokemonQuery: PokemonQuery) {
+    private pokemonQuery: PokemonQuery,
+    private commonService : CommonService) {
   }
 
+  setLoading(isLoading : boolean) {
+    this.pokemonStore.setLoading(isLoading);
+  }
 
-  get(queryParams: QueryParams, url: string = '') {
-    const _url = url != '' ? url : queryParams?.limit ? `${this.url}?limit=${queryParams?.limit}` : queryParams?.offset ? `${this.url}?offset=${queryParams?.offset}}` : this.url;
+  clear() {
+    this.pokemonStore.remove();
+  }
+
+  
+
+  get(queryParams: QueryParams) {
+    const _url = this.commonService.getQueryString(queryParams) ? `${this.url}${this.commonService.getQueryString(queryParams)}` : this.url;
     return this.http.get<Pokemon[]>(_url).pipe(map((entities: any) => {
       this.pokemonStore.updatePaging({
-        next: entities?.['next'],
+        next: entities?.['next'] ? entities?.['next'] : null,
         previous: entities?.['previous'],
         count: entities?.['count'],
       });
@@ -33,22 +44,20 @@ export class PokemonService {
     }));
   }
 
-  addStore(queryParams: QueryParams = {}, url: string = '', isRefresh: boolean = false) {
-    this.pokemonStore.setLoading(true);
+  addStore(queryParams: QueryParams = {}, isRefresh: boolean = false) {
     if (isRefresh) {
       this.pokemonStore.remove();
     }
-
     let _pokemons = [...[], ...this.pokemonQuery.getAll()];
-    return this.get(queryParams, url).pipe(
+    return this.get(queryParams).pipe(
       tap((pokemons: Pokemon[]) => {
+        this.setLoading(false);
         const entites = [...[], ..._pokemons, ...pokemons];
-        this.pokemonStore.setLoading(false);
         this.pokemonStore.set(entites);
       }),
       catchError(err => {
+        this.setLoading(false);
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Fail load data' });
-        this.pokemonStore.setLoading(false);
         return of(false)
       })
     )

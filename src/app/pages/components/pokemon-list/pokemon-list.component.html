@@ -1,4 +1,4 @@
-<div class="card" >
+<div class="card p-p-0">
     <p-dataView #dv [value]="pokemons" [loading]="isLoading" [paginator]="true" [rows]="row" filterBy="name"
          layout="grid" [lazy]="true" (onLazyLoad)="loadData($event)" [totalRecords]="totalRecords" [(first)]="first">
          <ng-template pTemplate="header">
@@ -11,7 +11,7 @@
             </div>
         </ng-template>
         <ng-template let-pokemon pTemplate="gridItem">
-            <div class="p-col-12 p-md-4 p-sm-12 p-lg-3 p-xl-3" (click)="showDialog(pokemon)">
+            <div class="p-col-12 p-md-4 p-sm-12 p-lg-3 p-xl-3 pokemon-grid-item-container" (click)="showDialog(pokemon)">
                 <div class="pokemon-grid-item card">
                     <div class="pokemon-grid-item-content">
                         <img [src]="pokemon?.sprites?.front_default" [alt]="pokemon?.name"/>
@@ -34,20 +34,12 @@
             </div>
         </div>
         <div class="p-md-9 p-sm-12 p-lg-9 p-xl-9">
-            <div class="p-grid">
-                <div class="p-col-2">Abilities: </div>
-                <div class="p-col-10">
-                    <span *ngFor="let abilitie of pokemonSelected?.abilities; index as i; first as isFirst">
-                        {{abilitie?.ability?.name}}<br>
-                    </span> 
-                </div>
-                <div class="p-col-2">Types: </div>
-                <div class="p-col-10">
-                    <span *ngFor="let type of pokemonSelected?.types; index as i; first as isFirst">
-                        {{type?.type?.name}}<br>
-                    </span> 
-                </div>
-            </div>
+            <div class="card p-p-0">
+                <p *ngFor="let abilitie of pokemonSelected?.abilities; index as i; first as isFirst">
+                  {{abilitie?.desAbilityInfo}}
+                  <p-divider></p-divider>
+                </p>
+              </div>
         </div>
     </div>
 </p-dialog>

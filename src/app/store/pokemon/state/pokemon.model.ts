@@ -6,6 +6,7 @@ export interface Pokemon {
   next?:string;
   previous?:string;
   count?: number;
+  abilities?: object[]
 }
 
 export interface QueryParams {

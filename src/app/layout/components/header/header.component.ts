@@ -41,12 +41,22 @@ export class HeaderComponent implements OnInit, OnDestroy {
       },
       {
         label: 'Locations',
-        items: [
-        ]
       },
       {
         label: 'Items',
       },
+      {
+        label: 'Pokemon section',
+        command: (e => {
+          this.pokemonAnchorSrcoll();
+        })
+      },
+      {
+        label: 'Items section',
+        command: (e => {
+          this.itemAnchorSrcoll();
+        })
+      }
     ];
     this.generationService.get().subscribe();
     this.versionService.get().subscribe();
@@ -76,6 +86,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
         })
       })
     ).subscribe();
+  }
+
+  pokemonAnchorSrcoll() {
+    document.getElementById('pokemons-section')?.scrollIntoView({behavior: 'smooth'});
+  }
+
+  itemAnchorSrcoll() {
+    document.getElementById('items-section')?.scrollIntoView({behavior: 'smooth'});
   }
 
   ngOnDestroy() {

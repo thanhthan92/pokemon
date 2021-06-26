@@ -1,15 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { of, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { mapTo, mergeMap, takeUntil, tap } from 'rxjs/operators';
+import { Ability, Effect } from 'src/app/store/pokemon/ability/state/ability.model';
+import { AbilityQuery } from 'src/app/store/pokemon/ability/state/ability.query';
+import { AbilityService } from 'src/app/store/pokemon/ability/state/ability.service';
 import { Item } from 'src/app/store/pokemon/items/state/item.model';
 import { ItemsQuery } from 'src/app/store/pokemon/items/state/items.query';
 import { ItemsService } from 'src/app/store/pokemon/items/state/items.service';
 import { Pokemon } from 'src/app/store/pokemon/state/pokemon.model';
 import { PokemonQuery } from 'src/app/store/pokemon/state/pokemon.query';
 import { PokemonService } from 'src/app/store/pokemon/state/pokemon.service';
-import Observable from 'zen-observable';
 
 @Component({
   selector: 'app-home',
@@ -36,13 +38,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   items: Item[] | any;
   display: boolean = false;
   pokemonSelected: Pokemon | any = {};
+  isLoadingDataModel: Observable<boolean> = of(false);
 
   constructor(private _sanitizer: DomSanitizer,
     private pokemonService: PokemonService,
     private pokemonQuery: PokemonQuery,
     private itemsService: ItemsService,
     private itemQuery: ItemsQuery,
-    private router: Router) {
+    private router: Router,
+    private abilityService: AbilityService,
+    private abilityQuery: AbilityQuery
+    ) {
   }
   images: object[] = [
     {
@@ -76,6 +82,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   ]
 
   ngOnInit(): void {
+    this.isLoadingDataModel = this.abilityQuery.selectLoading();
     this.images = this.images.map((image: any) => {
       return { ...image, ...{ previewVideoSrc: this._sanitizer.bypassSecurityTrustResourceUrl(image["previewVideoSrc"]) } }
     })
@@ -101,7 +108,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   loadPokemons() {
-    this.pokemonService.addStore({ limit: 10, offset: 0 }, '', true).pipe(
+    this.pokemonService.addStore({ limit: 10, offset: 0 }, true).pipe(
       takeUntil(this.unsubscribeAll),
       tap((pokemons: any) => {
         if(pokemons) {
@@ -122,6 +129,34 @@ export class HomeComponent implements OnInit, OnDestroy {
   showDialog(pokemon: Pokemon) {
     if (pokemon) {
       this.pokemonSelected = pokemon;
+      if(this.pokemonSelected?.abilities.length > 0) {
+        this.pokemonSelected?.abilities.forEach((obj : any) => {
+          this.abilityService.setLoading(true);
+          this.abilityService.getDetail(obj?.ability?.name as string, obj?.ability?.url).pipe(takeUntil(this.unsubscribeAll)).subscribe();
+        });
+      }
+
+      this.abilityQuery.selectAll().pipe(
+        takeUntil(this.unsubscribeAll),
+        tap(rs => {
+          if(this.pokemonSelected?.abilities.length > 0 && rs?.length > 0) {
+            let abilities = [...[], ...this.pokemonSelected?.abilities];
+            abilities = abilities.map((ability: any) => {
+              const abilityInfo: any = rs.find(item => item?.name === ability?.ability?.name);
+              
+              if(abilityInfo) {
+                const desAbilityInfo: Effect = abilityInfo?.effect_entries.find((effect: Effect) => {
+                    return effect.language?.name == 'en';
+                })
+                return {...{ability}, ...{desAbilityInfo: desAbilityInfo?.effect}};
+              }
+              return ability;
+            });
+            this.pokemonSelected = {...this.pokemonSelected, ...{abilities: abilities}};
+          };
+        })
+      ).subscribe();
+      
       this.display = true;
     }
   }

@@ -11,6 +11,8 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import {PaginatorModule} from 'primeng/paginator';
 import {InputTextModule} from 'primeng/inputtext';
+import {DividerModule} from 'primeng/divider';
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
 
 
 @NgModule({
@@ -28,7 +30,9 @@ import {InputTextModule} from 'primeng/inputtext';
     DialogModule,
     DropdownModule,
     PaginatorModule,
-    InputTextModule
+    InputTextModule,
+    DividerModule,
+    ProgressSpinnerModule
   ]
 })
 export class PagesModule { }
