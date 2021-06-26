@@ -72,7 +72,6 @@ export class PokemonListComponent implements OnInit, OnDestroy{
     this.pokemonQuery.selectAll().pipe(
       tap(pokemons => {
         this.virtualPokemons = [...[], ...pokemons];
-        console.log(this.virtualPokemons, this.first);
         this.pokemons = this.virtualPokemons.slice(this.first, (this.first + this.row * 2));
       }),
     ).subscribe();

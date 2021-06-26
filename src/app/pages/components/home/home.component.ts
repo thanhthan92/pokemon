@@ -122,7 +122,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   showDialog(pokemon: Pokemon) {
     if (pokemon) {
       this.pokemonSelected = pokemon;
-      console.log(this.pokemonSelected);
       this.display = true;
     }
   }
